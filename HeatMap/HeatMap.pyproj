@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>e0d30212-9ece-4e6f-9df6-271c80970f22</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>HeatMap.py</StartupFile>
+    <StartupFile>HeatMap.pyw</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -21,7 +21,22 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="HeatMap.py" />
+    <Compile Include="HeatMap.pyw" />
+    <Compile Include="modules\application.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="modules\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="modules\" />
+    <Folder Include="modules\ico\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="change_log.txt" />
+    <Content Include="create_exe.bat" />
+    <Content Include="modules\ico\map_512x512_35976.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
