@@ -1,3 +1,6 @@
+version 1.7
+	-	рефакторинг кода
+	-   замена библиотеки sareaderwriter на read_spss()
 version 1.6
 	-	рефакторинг кода
 version 1.5

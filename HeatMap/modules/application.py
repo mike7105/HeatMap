@@ -1,25 +1,17 @@
 # -*- coding: utf-8 -*-
 """HeatMap GUI"""
-import tkinter as tk
-import tkinter.ttk as ttk
-import tkinter.messagebox as msgbox
-import tkinter.filedialog as tkFD
-import tkinter.colorchooser as tkColor
 import os
-import sys
-import traceback
-import time
-import threading
 import queue
-# import numpy as np
-import numpy.random.common
-import numpy.random.bounded_integers
-import numpy.random.entropy
+import threading
+import time
+import tkinter as tk
+import tkinter.colorchooser as tkColor
+import tkinter.filedialog as tkFD
+import tkinter.messagebox as msgbox
+import tkinter.ttk as ttk
 import pandas as pd
-import savReaderWriter as srw
 from PIL import Image, ImageTk, ImageDraw
-##import matplotlib as mpl
-# import string
+
 
 class Application(ttk.Frame):
     """класс для отрисовки HeatMap"""
@@ -74,10 +66,8 @@ class Application(ttk.Frame):
 
         self.filemenu.add_separator()
 
-        self.filemenu.add_command(
-            label="Выход", accelerator="Ctrl+Q", command=self.master.destroy)
-        self.bind_all(
-            "<Control-KeyPress-q>", lambda evt: self.btn_exit.invoke())
+        self.filemenu.add_command(label="Выход", accelerator="Ctrl+Q", command=self.master.destroy)
+        self.bind_all("<Control-KeyPress-q>", lambda evt: self.btn_exit.invoke())
 
         self.mainmenu.add_cascade(label="Файл", menu=self.filemenu)
 
@@ -86,13 +76,11 @@ class Application(ttk.Frame):
 
         self.them = tk.StringVar()
         self.them.set("vista")
-        self.tharr = [
-            "default", "winnative", "clam", "alt", "classic", "vista", "xpnative"]
+        self.tharr = ["default", "winnative", "clam", "alt", "classic", "vista", "xpnative"]
 
         for style in self.tharr:
             self.thememenu.add_radiobutton(
-                label=style, variable=self.them, value=style,
-                command=self.change_theme)
+                label=style, variable=self.them, value=style, command=self.change_theme)
         self.mainmenu.add_cascade(label="Темы", menu=self.thememenu)
 
         # Создаем подменю Справка
@@ -111,16 +99,14 @@ class Application(ttk.Frame):
 
         # LabelImg
         self.lbl_img = ttk.Label(self, text="Choose image:")
-        self.lbl_img.grid(
-            row=0, column=0, columnspan=2, sticky="we", **self.grid_params)
+        self.lbl_img.grid(row=0, column=0, columnspan=2, sticky="we", **self.grid_params)
 
         # EntryImg
         self.var_img = tk.StringVar()
         self.var_img.set("")
         self.ent_img = ttk.Entry(self, textvariable=self.var_img)
         self.ent_img.state(["disabled"])
-        self.ent_img.bind(
-            "<Button-3>", lambda evt, obj=self.var_img: self.show_menu(evt, obj))
+        self.ent_img.bind("<Button-3>", lambda evt, obj=self.var_img: self.show_menu(evt, obj))
         self.ent_img.grid(row=1, column=0, sticky="we", **self.grid_params)
 
         # ButtonImg
@@ -130,16 +116,14 @@ class Application(ttk.Frame):
 
         # LabelData
         self.lbl_data = ttk.Label(self, text="Choose data:")
-        self.lbl_data.grid(
-            row=2, column=0, columnspan=2, sticky="we", **self.grid_params)
+        self.lbl_data.grid(row=2, column=0, columnspan=2, sticky="we", **self.grid_params)
 
         # EntryData
         self.var_data = tk.StringVar()
         self.var_data.set("")
         self.ent_data = ttk.Entry(self, textvariable=self.var_data)
         self.ent_data.state(["disabled"])
-        self.ent_data.bind(
-            "<Button-3>", lambda evt, obj=self.var_data: self.show_menu(evt, obj))
+        self.ent_data.bind("<Button-3>", lambda evt, obj=self.var_data: self.show_menu(evt, obj))
         self.ent_data.grid(row=3, column=0, sticky="we", **self.grid_params)
 
         # ButtonData
@@ -149,8 +133,7 @@ class Application(ttk.Frame):
 
         # Canvas
         self.canvas = tk.Canvas(self, width=300, height=300, bg='white')
-        self.canvas.grid(
-            row=4, column=0, columnspan=2, rowspan=4, sticky="wn", **self.grid_params)
+        self.canvas.grid(row=4, column=0, columnspan=2, rowspan=4, sticky="wn", **self.grid_params)
 
         # Frame
         self.frm2 = ttk.Frame(self)
@@ -163,14 +146,12 @@ class Application(ttk.Frame):
         self.var_radius = tk.IntVar()
         self.var_radius.set(1)
         self.spn_number = tk.Spinbox(
-            self.frm2, from_=1, to=10, increment=1,
-            exportselection=0, textvariable=self.var_radius)
+            self.frm2, from_=1, to=10, increment=1, exportselection=0, textvariable=self.var_radius)
         self.spn_number.grid(row=1, column=0, sticky="w", **self.grid_params)
         self.elems.append(self.spn_number)
 
         # ButtonColor
-        self.btn_color = ttk.Button(
-            self.frm2, text="Change color:", command=self.open_color)
+        self.btn_color = ttk.Button(self.frm2, text="Change color:", command=self.open_color)
         self.btn_color.grid(row=2, column=0, sticky="w", **self.grid_params)
         self.elems.append(self.btn_color)
 
@@ -187,8 +168,7 @@ class Application(ttk.Frame):
         self.var_opacity = tk.IntVar()
         self.var_opacity.set(50)
         self.spn_opacity = tk.Spinbox(
-            self.frm2, from_=0, to=100, increment=10,
-            exportselection=0, textvariable=self.var_opacity)
+            self.frm2, from_=0, to=100, increment=10, exportselection=0, textvariable=self.var_opacity)
         self.spn_opacity.grid(row=5, column=0, sticky="w", **self.grid_params)
         self.elems.append(self.spn_opacity)
 
@@ -197,23 +177,18 @@ class Application(ttk.Frame):
         self.lbl_dataimg.grid(row=6, column=0, sticky="w", **self.grid_params)
 
         # TreeView
-        self.trw2 = ttk.Treeview(
-            self.frm2, columns=("ConcQst", "Countdots"), displaycolumns=(0, 1),
-            show="headings")
-        # self.trw2.column("Countdots", width=50, stretch=False, anchor="center")
+        self.trw2 = ttk.Treeview(self.frm2, columns=("ConcQst", "Countdots"), displaycolumns=(0, 1), show="headings")
         self.trw2.heading("ConcQst", text="Image - QST")
         self.trw2.heading("Countdots", text="Count dots", anchor="center")
         self.trw2.grid(row=10, column=0, sticky="w", **self.grid_params)
         self.elems.append(self.trw2)
 
-        #Scrollbar
-        self.hor_scr = ttk.Scrollbar(
-            self.frm2, orient=tk.HORIZONTAL, command=self.trw2.xview)
+        # Scrollbar
+        self.hor_scr = ttk.Scrollbar(self.frm2, orient=tk.HORIZONTAL, command=self.trw2.xview)
         self.hor_scr.grid(row=11, column=0, sticky="we")
         self.ver_scr = ttk.Scrollbar(self.frm2, command=self.trw2.yview)
         self.ver_scr.grid(row=10, column=1, sticky="ns")
         self.trw2.config(yscrollcommand=self.ver_scr.set, xscrollcommand=self.hor_scr.set)
-
 
         # ButtonDraw
         self.btn_draw = ttk.Button(self.frm2, text="Draw", command=self.drawdots)
@@ -229,34 +204,16 @@ class Application(ttk.Frame):
         self.grid_columnconfigure(0, weight=2)
         self.grid_columnconfigure(1, weight=2)
 
-    def get_value(self, val):
-        """возвращает float или string"""
-        try:
-            return float(val)
-        except ValueError:
-            return val
-
     def drawdots(self):
         """Проход по координатам и отрисовка"""
         self.change_state(False)
         self.var_status.set("")
         if self.validate():
-            # print(self.df.values.nbytes)
             # фильтрация нужных данных
-            self.df2 = self.df.query(
-                '(X <= @self.img.size[0]) and (Y <= @self.img.size[1])')
+            self.df2 = self.df.query('(X <= @self.img.size[0]) and (Y <= @self.img.size[1])')
 
-            # функция фозвращает float или int или оставляет строку
-##            parseStr = lambda x: x.isalpha() and x or x.isdigit() and \
-##                int(x) or x.isalnum() and x or \
-##                len(set(string.punctuation).intersection(x)) == 1 and \
-##                x.count('.') == 1 and float(x) or x
-
-            self.concqst = list(
-                map(self.get_value, self.trw2.selection()[0].split(' - ')))
-            self.df2.query(
-                '(CONC == @self.concqst[0]) and (QST == @self.concqst[1])',
-                inplace=True)
+            self.concqst = self.trw2.selection()[0].split(' - ')
+            self.df2.query('(CONC == @self.concqst[0]) and (QST == @self.concqst[1])', inplace=True)
 
             # насчитываю координаты квадрата, куда вписывать точку ответа
             self.df2.eval('LEFT = X - @self.var_radius.get()', inplace=True)
@@ -265,17 +222,13 @@ class Application(ttk.Frame):
             self.df2.eval('BOTTOM = Y + @self.var_radius.get()', inplace=True)
 
             # цвет точки
-            self.fillrgba = (
-                int(self.color[0][0]), int(self.color[0][1]),
-                int(self.color[0][2]), int(self.var_opacity.get()*2.55))
+            self.fillrgba = (int(self.color[0][0]), int(self.color[0][1]), 
+                             int(self.color[0][2]), int(self.var_opacity.get() * 2.55))
 
             # точка для canvas
-            self.pim = Image.new(
-                'RGBA', (self.var_radius.get()*2+1, self.var_radius.get()*2+1),
-                (0, 0, 0, 0))
+            self.pim = Image.new('RGBA', (self.var_radius.get() * 2 + 1, self.var_radius.get() * 2 + 1), (0, 0, 0, 0))
             self.draw = ImageDraw.Draw(self.pim, "RGBA")
-            self.draw.ellipse(
-                (0, 0, self.pim.size[0], self.pim.size[1]), fill=self.fillrgba)
+            self.draw.ellipse((0, 0, self.pim.size[0], self.pim.size[1]), fill=self.fillrgba)
             self.photo = ImageTk.PhotoImage(self.pim)
 
             # картинка для сохранения
@@ -290,10 +243,10 @@ class Application(ttk.Frame):
                 self.queue.put(i)
 
             threads = []
-            quant_bariers = 10 ** (len(str(self.df2.shape[0]))//2)
+            quant_bariers = 10 ** (len(str(self.df2.shape[0])) // 2)
             quant_bariers = 100 if quant_bariers > 100 else quant_bariers
             self.barrier = threading.Barrier(quant_bariers)
-            for i in range(0, quant_bariers-1):
+            for i in range(0, quant_bariers - 1):
                 thr = threading.Thread(target=self.draw_dots_thr)
                 threads.append(thr)
                 thr.start()
@@ -301,32 +254,24 @@ class Application(ttk.Frame):
             threads.append(thr)
             thr.start()
 
-        self.change_state(True)
-
     def draw_dots_thr(self):
         """Рисует точки с использованием многопоточности"""
         local = threading.local()
         while not self.queue.empty():
             local.i = self.queue.get()
             # точка на canvas
-            self.canvas.create_image(
-                *self.df2.iloc[local.i, -4:-2:].to_list(), image=self.photo,
-                anchor=tk.NW, tag="dot")
+            self.canvas.create_image(*self.df2.iloc[local.i, -4:-2:].to_list(), anchor=tk.NW,
+                                     image=self.photo, tag="dot")
 
             # точка на картинке дял сохранения
             local.circle = Image.new('RGBA', self.photo2.size, (0, 0, 0, 0))
             local.d = ImageDraw.Draw(local.circle)
-            local.d.ellipse(
-                tuple(self.df2.iloc[local.i, -4::].to_list()), fill=self.fillrgba)
+            local.d.ellipse(tuple(self.df2.iloc[local.i, -4::].to_list()), fill=self.fillrgba)
 
             with self.lock:
                 self.photo2 = Image.alpha_composite(self.photo2, local.circle)
-                self.var_status.set(
-                    "dots: " + str(self.var_pb.get()+1) + " from " +
-                    str(self.df2.shape[0]))
+                self.var_status.set("dots: {0} from {1}".format(str(self.var_pb.get() + 1), str(self.df2.shape[0])))
                 self.pgb.step()
-                # self.after(0, self.pgb.step())
-                # self.pgb.update()
 
             self.queue.task_done()
 
@@ -338,14 +283,13 @@ class Application(ttk.Frame):
         self.time_end = time.time()
         self.duration = self.time_end - self.time_start
         print(self.duration)
+        self.change_state(True)
 
     def save_img(self):
         """сохранение изображения"""
         if self.validate():
             filename = tkFD.asksaveasfilename(
-                title="Save heathread_endap", filetypes=[
-                    ("Image PNG", ".png"), ("Image JPG", ".jpg")],
-                defaultextension='.png')
+                title="Save heatmap", filetypes=[("Image PNG", ".png"), ("Image JPG", ".jpg")], defaultextension='.png')
             if filename:
                 if str.lower(os.path.splitext(filename)[1]) == ".jpg":
                     self.photo2 = self.photo2.convert("RGB")
@@ -362,8 +306,7 @@ class Application(ttk.Frame):
         """Выбор картинки"""
         self.var_status.set("")
         filename = tkFD.askopenfilename(
-            title="Choose image", filetypes=(
-                ("Image JPG", "JPG"), ("Image PNG", "PNG")), defaultextension=".jpg")
+            title="Choose image", filetypes=(("Image JPG", "JPG"), ("Image PNG", "PNG")), defaultextension=".jpg")
         if filename:
             self.var_img.set(filename)
             self.img = Image.open(filename)
@@ -377,59 +320,29 @@ class Application(ttk.Frame):
         """Выбор данных"""
         self.var_status.set("")
         filename = tkFD.askopenfilename(
-            title="Choose data", filetypes=(
-                ("Data CSV", "CSV"), ("Data SPSS", "SAV")), defaultextension=".csv")
+            title="Choose data", filetypes=(("Data CSV", "CSV"), ("Data SPSS", "SAV")), defaultextension=".csv")
         if filename:
             self.var_data.set(filename)
             if str.lower(os.path.splitext(filename)[1]) == ".csv":
                 self.df = pd.read_csv(filename)
-                self.df.columns = [str.upper(i) for i in self.df.columns]
-                self.is_sav = False
             else:
-                try:
-                    with srw.SavReader(filename, ioUtf8=True) as reader:
-                        self.df = pd.DataFrame(
-                            data=list(reader), columns=[str.upper(i) for i in reader.header])
-                except BaseException as err:
-                    Type, Value, Trace = sys.exc_info()
-                    print("\n", "format_exception_only()".center(40, "-"))
-                    print(traceback.format_exception_only(Type, Value))
-                    msgbox.showinfo("Unexpected error:", err, parent=self)
-                    self.var_status.set("SPSS can't be loaded. Use CSV data.")
-                    raise
+                self.df = pd.read_spss(filename)
 
-                self.is_sav = True
-                with srw.SavHeaderReader(filename, ioUtf8=True) as header:
-                    self.metadata = header.all()
-                    self.labels = {str.upper(x):
-                        {y: str.upper(z) for y, z in zip(
-                            self.metadata.valueLabels[x].keys(),
-                            self.metadata.valueLabels[x].values())}
-                                   for x in self.metadata.valueLabels.keys()}
-            
+            self.df.columns = [str.upper(i) for i in self.df.columns]
             self.df.dropna(how='any', inplace=True)
             self.df.query('(X >= 0) and (Y >= 0)', inplace=True)
-            # self.df = self.df.astype({"X": np.int64, "Y": np.int64})
 
             # считаю статистику кликов
-            stat = self.df.pivot_table(
-                ['X', 'Y'], index=['CONC', 'QST'], aggfunc='count')
+            stat = self.df.pivot_table(['X', 'Y'], index=['CONC', 'QST'], aggfunc='count')
 
             # добавляю статистику и CONC QST в TreeView
             self.trw2.delete(*self.trw2.get_children())
             for row in list(stat.index):
-                self.trw2.insert(
-                    "", "end", " - ".join(map(str, row)), values=(
-                        " - ".join(self.get_label(row)), str(stat.loc[row, 'X'])))
+                self.trw2.insert("", "end", " - ".join(map(str, row)),
+                                 values=(" - ".join(row), str(stat.loc[row, 'X'])))
 
         else:
             msgbox.showerror("Choose data", "File wasn't chosen!")
-
-    def get_label(self, row) -> tuple:
-        """Возвращает кортеж: метка для CONC, метка для QST"""
-        if self.is_sav:
-            return (self.labels['CONC'][row[0]], self.labels['QST'][row[1]])
-        return row
 
     def open_color(self):
         """Выбор цвета"""
@@ -486,6 +399,7 @@ class Application(ttk.Frame):
                     elem.state(["disabled"])
                 else:
                     elem.config(state="disabled")
+
 
 if __name__ == "__main__":
     pass

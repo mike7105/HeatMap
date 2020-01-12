@@ -12,11 +12,11 @@ setup(
     description="HeatMap cxf",
     options={
         'build_exe': {
-            'include_files':[
+            'include_files': [
                 os.path.join(PYTHON_INSTALL_DIR, 'DLLs', 'tk86t.dll'),
                 os.path.join(PYTHON_INSTALL_DIR, 'DLLs', 'tcl86t.dll'),
                 ],
             },
         },
-    executables=[Executable("HeatMap.pyw")]
+    executables=[Executable("HeatMap.pyw")], requires=['savReaderWriter', 'pandas', 'PIL']
 )
