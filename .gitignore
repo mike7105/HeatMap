@@ -259,3 +259,10 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+*idea*
+*__pycache__*
+*build*
+*.vs*
+*.zip
+*.rar
+HeatMap.spec
