@@ -1,3 +1,6 @@
+version 1.9
+	-	venv
+	-	delete theme
 version 1.8
 	-	рефакторинг кода
 	-   исправлен баг с SPSS

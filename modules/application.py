@@ -13,7 +13,6 @@ import pandas as pd
 from PIL import Image, ImageTk, ImageDraw
 import sys
 import logging
-
 import pyreadstat
 
 
@@ -76,15 +75,15 @@ class Application(ttk.Frame):
         self.mainmenu.add_cascade(label="Файл", menu=self.filemenu)
 
         # Добавляем меню Настройки в главное меню
-        self.thememenu = tk.Menu(self.mainmenu, tearoff=False)
+        # self.thememenu = tk.Menu(self.mainmenu, tearoff=False)
 
-        self.them = tk.StringVar()
-        self.them.set("vista")
-        self.tharr = ["default", "winnative", "clam", "alt", "classic", "vista", "xpnative"]
+        # self.them = tk.StringVar()
+        # self.them.set("vista")
+        # self.tharr = ["default", "winnative", "clam", "alt", "classic", "vista", "xpnative"]
 
-        for style in self.tharr:
-            self.thememenu.add_radiobutton(label=style, variable=self.them, value=style, command=self.change_theme)
-        self.mainmenu.add_cascade(label="Темы", menu=self.thememenu)
+        # for style in self.tharr:
+        #     self.thememenu.add_radiobutton(label=style, variable=self.them, value=style, command=self.change_theme)
+        # self.mainmenu.add_cascade(label="Темы", menu=self.thememenu)
 
         # Создаем подменю Справка
         self.helpmenu = tk.Menu(self.mainmenu, tearoff=False)
@@ -287,6 +286,8 @@ class Application(ttk.Frame):
         self.duration = self.time_end - self.time_start
         print(self.duration)
         self.change_state(True)
+        self.barrier.reset()
+        self.barrier.abort()
 
     def save_img(self):
         """сохранение изображения"""
@@ -374,9 +375,9 @@ class Application(ttk.Frame):
         self.clipboard_clear()
         self.clipboard_append(self.to_copy)
 
-    def change_theme(self):
-        """меняет внешний вид при выборе встроенных тем"""
-        self.style.theme_use(self.them.get())
+    # def change_theme(self):
+    #     """меняет внешний вид при выборе встроенных тем"""
+    #    self.style.theme_use(self.them.get())
 
     def validate(self) -> bool:
         """проверка введенных значений
